@@ -36,7 +36,7 @@ input,select{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:8px;
  <div class="card"><div class="label">Meta guía</div><div class="metric">63.5</div><div class="label">kg</div></div>
 </div>
 <nav>
-<button class="active" data-tab="home">Resumen</button><button data-tab="train">Entrenamiento</button><button data-tab="body">Medidas</button><button data-tab="food">Nutrición</button><button data-tab="history">Historial</button>
+<button type="button" class="active" data-tab="home">Resumen</button><button type="button" data-tab="train">Entrenamiento</button><button type="button" data-tab="body">Medidas</button><button type="button" data-tab="food">Nutrición</button><button type="button" data-tab="history">Historial</button>
 </nav>
 <section id="home">
 <h2>Panel de progreso</h2>
@@ -49,7 +49,7 @@ input,select{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:8px;
 <div class="card"><b>Evolución del peso</b><div id="weightChart" style="height:95px;display:flex;align-items:end;gap:4px;margin-top:12px"></div><div class="small">Registra tus pesajes para ver la tendencia.</div></div>
 <div class="card"><b>Objetivos</b><p class="small">Peso: <b id="weightProgress">65.5 / 63.5 kg</b></p><div class="bar"><span id="weightBar" style="width:0%"></span></div><p class="small">Cintura: <b id="waistProgress">80 / 77 cm</b></p><div class="bar"><span id="waistBar" style="width:0%"></span></div></div>
 <div class="card"><b>Calendario del PDF</b><div class="grid" style="margin-top:9px"><div class="label">MARTES · Lower A</div><div class="label">JUEVES · Upper A</div><div class="label">VIERNES · Lower B</div><div class="label">SÁBADO · Upper B</div></div></div>
-<button class="primary full" id="quickWorkout">+ Registrar entrenamiento</button>
+<button type="button" class="primary full" id="quickWorkout">+ Registrar entrenamiento</button>
 </section>
 <section id="train" class="hidden">
 <h2>Registro de entrenamiento</h2>
@@ -59,7 +59,7 @@ input,select{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:8px;
 <div class="field"><label>Semana del bloque</label><select id="week"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4 · Descarga</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8 · Descarga</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12 · Transición</option></select></div>
 </div>
 <div class="card" id="weekPrescription" aria-live="polite"></div><div id="exerciseList"></div>
-<div class="card"><div class="field"><label>Observaciones</label><input id="workNotes" placeholder="Energía, técnica, molestias..."></div><button class="primary full" id="saveWorkout">Guardar sesión</button></div>
+<div class="card"><div class="field"><label>Observaciones</label><input id="workNotes" placeholder="Energía, técnica, molestias..."></div><button type="button" class="primary full" id="saveWorkout">Guardar sesión</button></div>
 <p class="small">Registra carga, repeticiones y RIR por serie efectiva. RIR = repeticiones que estimas que aún podrías realizar con buena técnica.</p>
 </section>
 <section id="body" class="hidden">
@@ -75,7 +75,7 @@ input,select{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:8px;
 <div class="field"><label>Grasa corporal (%)</label><input id="mFat" type="number" step=".1"></div>
 </div>
 <div class="field"><label>Método / notas</label><input id="mNotes" placeholder="Balanza, pliegues, condiciones..."></div>
-<button class="primary full" id="saveBody">Guardar medición</button>
+<button type="button" class="primary full" id="saveBody">Guardar medición</button>
 </div>
 <div class="card"><b>Últimas mediciones</b><div id="bodyHistory" class="small">Todavía no hay mediciones.</div></div>
 </section>
@@ -89,7 +89,7 @@ input,select{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:8px;
 <div class="field"><label>Calorías</label><input id="fCal" type="number"></div><div class="field"><label>Proteína (g)</label><input id="fPro" type="number"></div>
 <div class="field"><label>Carbohidratos (g)</label><input id="fCarb" type="number"></div><div class="field"><label>Grasas (g)</label><input id="fFat" type="number"></div>
 </div>
-<button class="primary full" id="saveFood">Guardar nutrición</button>
+<button type="button" class="primary full" id="saveFood">Guardar nutrición</button>
 </div>
 <div class="card"><b>Balance del día</b><div id="foodBalance" class="small">Registra tu alimentación.</div></div>
 <p class="small">Las calorías son un punto de partida, no un mantenimiento medido. Ajusta según tendencias de peso y rendimiento.</p>
@@ -99,9 +99,9 @@ input,select{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:8px;
 <div class="card"><b>Entrenamientos</b><div id="workHistory"></div></div>
 <div class="card"><b>Nutrición</b><div id="foodHistory"></div></div>
 <div class="card">
-<button class="primary full" id="exportData">Exportar registros CSV</button><button class="full" style="margin-top:7px" id="backupData">Descargar copia JSON</button>
+<button type="button" class="primary full" id="exportData">Exportar registros CSV</button><button type="button" class="full" style="margin-top:7px" id="backupData">Descargar copia JSON</button>
 <label class="field" style="margin-top:12px">Restaurar copia JSON<input type="file" id="restoreFile" accept=".json,application/json"></label>
-<button class="full" id="clearData" style="margin-top:8px;color:#b91c1c">Borrar todos los registros</button>
+<button type="button" class="full" id="clearData" style="margin-top:8px;color:#b91c1c">Borrar todos los registros</button>
 <p class="small">Los datos se guardan en este navegador. Exporta copias periódicamente y evita borrar los datos del sitio si quieres conservarlos.</p>
 </div>
 </section>
@@ -157,4 +157,15 @@ $('exportData').onclick=()=>{let rows=[['tipo','fecha','sesion','semana','ejerci
 $('clearData').onclick=()=>{if(confirm('¿Borrar definitivamente todos los registros?')){db={body:[],workouts:[],food:[],phase:'bulk'};save();render()}};
 render();
 })();
-</script></body></html>
+</script>
+<script>
+window.addEventListener('error', function(e) {
+  var n = document.getElementById('notice');
+  if (n) n.textContent = 'Error de la aplicación: ' + (e.message || 'JavaScript') + '. Recarga la página; si persiste, envía una captura.';
+});
+window.addEventListener('unhandledrejection', function(e) {
+  var n = document.getElementById('notice');
+  if (n) n.textContent = 'Error interno: ' + String(e.reason || 'operación fallida');
+});
+</script>
+</body></html>

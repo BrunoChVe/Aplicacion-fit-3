@@ -1,10 +1,7 @@
-BRUNO FITNESS TRACKER PWA — ACTUALIZACIÓN PESO META
+BRUNO FITNESS TRACKER — HOTFIX DE BOTONES Y CACHÉ
 
-Sube estos archivos a tu repositorio GitHub, reemplazando index.html y sw.js, y conservando manifest.webmanifest e icons/.
-GitHub Pages: Settings > Pages > Deploy from a branch > main > /(root).
-
-Novedad:
-- Campo de peso meta (kg) por ejercicio y sesión.
-- Se conserva la meta junto con el peso real, repeticiones y RIR.
-- La sesión siguiente muestra la carga anterior y su meta como referencia.
-- Se mantienen los registros existentes del navegador (misma clave localStorage).
+Sube TODO el contenido de esta carpeta a la raíz del repositorio GitHub, reemplazando archivos existentes.
+Archivos clave: index.html y sw.js.
+Después de Commit changes, espera a que GitHub Pages termine el despliegue.
+Abre la web en Chrome/Safari y recarga. La caché pasa a v3 y solicita el HTML actualizado.
+La clave de almacenamiento local se mantiene como bft-bruno-v1 para conservar los registros de ese navegador.
