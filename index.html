@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#172b4d">
+<title>Bruno Fitness Tracker</title>
+<style>
+:root{font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:#172033;background:#f3f5f8}
+*{box-sizing:border-box}body{margin:0}.wrap{max-width:760px;margin:auto;padding:16px}
+header{background:#172b4d;color:white;padding:20px;border-radius:16px;margin-bottom:14px}
+h1{font-size:23px;margin:0 0 4px}h2{font-size:18px;margin:0 0 12px}.muted{color:#64748b;font-size:12px}
+header .muted{color:#cbd5e1}.stats,.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.stats{grid-template-columns:repeat(3,minmax(0,1fr));margin-bottom:12px}
+.card{background:white;border:1px solid #e2e8f0;border-radius:13px;padding:13px;margin-bottom:12px}
+.metric{font-size:25px;font-weight:750;margin:3px 0}.label{font-size:11px;color:#64748b}
+nav{display:flex;gap:5px;overflow:auto;margin-bottom:13px}
+button{border:0;border-radius:9px;padding:10px 12px;font-weight:650;background:#e2e8f0;color:#172033;cursor:pointer}
+nav button{white-space:nowrap;font-size:12px}nav button.active,.primary{background:#2457a7;color:white}
+input,select{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:8px;background:white;font:inherit;font-size:14px}
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:10px}.field label{font-size:12px;color:#64748b}
+.hidden{display:none!important}.row{display:flex;gap:8px}.row>*{flex:1;min-width:0}
+.exercise{border:1px solid #e2e8f0;border-radius:11px;padding:11px;margin:9px 0}
+.setrow{display:grid;grid-template-columns:25px 1fr 1fr 1fr;gap:6px;margin-top:7px;align-items:center}
+.setrow input{text-align:center;padding:8px 3px}.sethead{display:grid;grid-template-columns:25px 1fr 1fr 1fr;gap:6px;margin-top:9px;color:#64748b;font-size:10px;text-align:center}
+.bar{height:8px;background:#e2e8f0;border-radius:8px;overflow:hidden;margin:5px 0 12px}.bar span{display:block;height:100%;background:#2457a7}
+.log{padding:9px 0;border-bottom:1px solid #e2e8f0;font-size:13px}.small{font-size:11px;color:#64748b}
+.full{width:100%}
+@media(max-width:390px){.wrap{padding:10px}.stats{gap:6px}.metric{font-size:21px}.card{padding:10px}}
+</style>
+</head>
+<body><main class="wrap" id="app">
+<header><div class="muted">PERSONAL TRAINING SYSTEM</div><h1>Bruno Fitness Tracker</h1><div class="muted">Proyecto físico · Abril 2027 · Hipertrofia 3.0 · v2.0</div></header>
+<div class="stats">
+ <div class="card"><div class="label">Peso actual</div><div class="metric" id="topWeight">65.5</div><div class="label">kg</div></div>
+ <div class="card"><div class="label">Cintura</div><div class="metric" id="topWaist">80</div><div class="label">cm</div></div>
+ <div class="card"><div class="label">Meta guía</div><div class="metric">63.5</div><div class="label">kg</div></div>
+</div>
+<nav>
+<button class="active" data-tab="home">Resumen</button><button data-tab="train">Entrenamiento</button><button data-tab="body">Medidas</button><button data-tab="food">Nutrición</button><button data-tab="history">Historial</button>
+</nav>
+<section id="home">
+<h2>Panel de progreso</h2>
+<div class="grid">
+ <div class="card"><div class="label">Promedio peso · 7 días</div><div class="metric" id="avgWeight">65.50 kg</div><div class="small" id="weightDelta">Línea base</div></div>
+ <div class="card"><div class="label">Última cintura</div><div class="metric" id="avgWaist">80 cm</div><div class="small">Objetivo: 76–78 cm</div></div>
+ <div class="card"><div class="label">Sesiones registradas</div><div class="metric" id="sessions">0</div></div>
+ <div class="card"><div class="label">Proteína promedio</div><div class="metric" id="avgProtein">—</div><div class="small">g/día</div></div>
+</div>
+<div class="card"><b>Evolución del peso</b><div id="weightChart" style="height:95px;display:flex;align-items:end;gap:4px;margin-top:12px"></div><div class="small">Registra tus pesajes para ver la tendencia.</div></div>
+<div class="card"><b>Objetivos</b><p class="small">Peso: <b id="weightProgress">65.5 / 63.5 kg</b></p><div class="bar"><span id="weightBar" style="width:0%"></span></div><p class="small">Cintura: <b id="waistProgress">80 / 77 cm</b></p><div class="bar"><span id="waistBar" style="width:0%"></span></div></div>
+<div class="card"><b>Calendario del PDF</b><div class="grid" style="margin-top:9px"><div class="label">MARTES · Lower A</div><div class="label">JUEVES · Upper A</div><div class="label">VIERNES · Lower B</div><div class="label">SÁBADO · Upper B</div></div></div>
+<button class="primary full" id="quickWorkout">+ Registrar entrenamiento</button>
+</section>
+<section id="train" class="hidden">
+<h2>Registro de entrenamiento</h2>
+<div class="card">
+<div class="field"><label>Fecha</label><input type="date" id="workDate"></div>
+<div class="field"><label>Sesión</label><select id="workDay"><option value="lowerA">Martes · Lower A</option><option value="upperA">Jueves · Upper A</option><option value="lowerB">Viernes · Lower B</option><option value="upperB">Sábado · Upper B</option></select></div>
+<div class="field"><label>Semana del bloque</label><select id="week"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4 · Descarga</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8 · Descarga</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12 · Transición</option></select></div>
+</div>
+<div class="card" id="weekPrescription" aria-live="polite"></div><div id="exerciseList"></div>
+<div class="card"><div class="field"><label>Observaciones</label><input id="workNotes" placeholder="Energía, técnica, molestias..."></div><button class="primary full" id="saveWorkout">Guardar sesión</button></div>
+<p class="small">Registra carga, repeticiones y RIR por serie efectiva. RIR = repeticiones que estimas que aún podrías realizar con buena técnica.</p>
+</section>
+<section id="body" class="hidden">
+<h2>Composición corporal</h2>
+<div class="card">
+<div class="field"><label>Fecha</label><input type="date" id="bodyDate"></div>
+<div class="grid">
+<div class="field"><label>Peso (kg)</label><input id="mWeight" type="number" step=".05" placeholder="65.50"></div>
+<div class="field"><label>Cintura (cm)</label><input id="mWaist" type="number" step=".1" placeholder="80"></div>
+<div class="field"><label>Pecho (cm)</label><input id="mChest" type="number" step=".1"></div>
+<div class="field"><label>Brazo contraído (cm)</label><input id="mArm" type="number" step=".1" placeholder="32.5"></div>
+<div class="field"><label>Cadera (cm)</label><input id="mHip" type="number" step=".1"></div>
+<div class="field"><label>Grasa corporal (%)</label><input id="mFat" type="number" step=".1"></div>
+</div>
+<div class="field"><label>Método / notas</label><input id="mNotes" placeholder="Balanza, pliegues, condiciones..."></div>
+<button class="primary full" id="saveBody">Guardar medición</button>
+</div>
+<div class="card"><b>Últimas mediciones</b><div id="bodyHistory" class="small">Todavía no hay mediciones.</div></div>
+</section>
+<section id="food" class="hidden">
+<h2>Control nutricional</h2>
+<div class="card">
+<div class="field"><label>Fase</label><select id="phase"><option value="bulk">Volumen controlado</option><option value="cut">Definición</option></select></div>
+<div class="grid"><div class="card"><div class="label">Calorías objetivo</div><div class="metric" id="calTarget">2300</div></div><div class="card"><div class="label">Proteína objetivo</div><div class="metric">140 g</div></div></div>
+<div class="field"><label>Fecha</label><input type="date" id="foodDate"></div>
+<div class="grid">
+<div class="field"><label>Calorías</label><input id="fCal" type="number"></div><div class="field"><label>Proteína (g)</label><input id="fPro" type="number"></div>
+<div class="field"><label>Carbohidratos (g)</label><input id="fCarb" type="number"></div><div class="field"><label>Grasas (g)</label><input id="fFat" type="number"></div>
+</div>
+<button class="primary full" id="saveFood">Guardar nutrición</button>
+</div>
+<div class="card"><b>Balance del día</b><div id="foodBalance" class="small">Registra tu alimentación.</div></div>
+<p class="small">Las calorías son un punto de partida, no un mantenimiento medido. Ajusta según tendencias de peso y rendimiento.</p>
+</section>
+<section id="history" class="hidden">
+<h2>Historial y copias de seguridad</h2>
+<div class="card"><b>Entrenamientos</b><div id="workHistory"></div></div>
+<div class="card"><b>Nutrición</b><div id="foodHistory"></div></div>
+<div class="card">
+<button class="primary full" id="exportData">Exportar registros CSV</button><button class="full" style="margin-top:7px" id="backupData">Descargar copia JSON</button>
+<label class="field" style="margin-top:12px">Restaurar copia JSON<input type="file" id="restoreFile" accept=".json,application/json"></label>
+<button class="full" id="clearData" style="margin-top:8px;color:#b91c1c">Borrar todos los registros</button>
+<p class="small">Los datos se guardan en este navegador. Exporta copias periódicamente y evita borrar los datos del sitio si quieres conservarlos.</p>
+</div>
+</section>
+<p class="small" id="notice" style="text-align:center">Datos guardados localmente en este navegador.</p>
+</main>
+<script>
+(()=>{
+const $=id=>document.getElementById(id),today=()=>new Date().toLocaleDateString('en-CA');
+const initial={body:[{date:'2026-11-07',weight:65.5,waist:80,notes:'Línea base inicial'}],workouts:[],food:[],phase:'bulk'};
+let db;try{db=JSON.parse(localStorage.getItem('bft-bruno-v1'))||initial}catch(e){db=initial}
+const save=()=>{try{localStorage.setItem('bft-bruno-v1',JSON.stringify(db));$('notice').textContent='Guardado · '+new Date().toLocaleTimeString()}catch(e){$('notice').textContent='No se pudo guardar. Descarga una copia.'}};
+const n=v=>v===''||v==null?null:Number(v),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const plans={
+lowerA:[['Sentadilla máquina Smith',2,6,10,50],['Curl femoral sentado',2,8,12,43],['Curl martillo con apoyo',3,8,12,12],['Extensión de tríceps en polea',3,10,15,21],['Extensión de cuádriceps',1,10,15,79.5],['Curl femoral tumbado',1,10,15,50]],
+upperA:[['Press banca inclinado con barra',3,6,10,45],['Dominadas neutras',3,6,10,'76*'],['Press horizontal en máquina',2,8,12,59],['Remo prono en máquina',1,8,12,57],['Elevación lateral en polea',3,12,20,3.75]],
+lowerB:[['Peso muerto rumano (RDL)',2,6,10,95],['Sentadilla hack',2,8,12,60],['Extensión de tríceps overhead',3,10,15,18.75],['Curl predicador barra Z',3,8,12,'30 / 26'],['Curl femoral tumbado',1,10,15,50],['Búlgara Smith dominante cadera',1,8,12,30],['Crunch abdominal máquina',2,10,15,72.5]],
+upperB:[['Remo Helms con barra',2,6,10,60],['Press banca plano con barra',3,6,10,65],['Jalón prono en polea',3,8,12,57],['Press inclinado máquina pendular',2,8,12,60],['Elevación lateral con mancuerna',3,12,20,12]]
+};
+const weekInfo=w=>w<=3?{phase:'Acumulación 1',rir:w===1?'3–4 básicos / 2–3 aislamientos':w===2?'3 básicos / 2 aislamientos':'2 básicos / 1–2 aislamientos',deload:false}:w===4?{phase:'Descarga',rir:'4+ en todas las series',deload:true}:w<=7?{phase:'Acumulación 2',rir:w===5?'2–3':w===6?'2':'1–2',deload:false}:w===8?{phase:'Descarga',rir:'3–4 en todas las series',deload:true}:w<=11?{phase:'Intensificación',rir:w===9?'2':'1–2 básicos / 0–1 aislamientos',deload:false}:{phase:'Transición',rir:'3–4 en todas las series',deload:true};
+function weekNumber(){return Math.max(1,Math.min(12,parseInt($('week').value,10)||1))}
+function targetRir(w){return weekInfo(w).rir}
+function exercises(){
+let day=$('workDay').value,w=weekNumber(),info=weekInfo(w),prev=db.workouts.filter(x=>x.day===day).at(-1);
+let defs=plans[day];
+let title=`<b>Semana ${w} · ${info.phase}</b><div class="small">RIR objetivo: ${info.rir}. ${info.deload?'Descarga/transición: reduce aproximadamente 50% de series y no busques progresar.':'Progresión: primero repeticiones; después carga.'}</div>`;
+$('weekPrescription').innerHTML=title;
+$('exerciseList').innerHTML=defs.map(([name,count,min,max,base],i)=>{let sets=info.deload?Math.max(1,Math.ceil(count/2)):count;let prior=prev?.exercises?.find(e=>e.name===name);let priorLoad=prior?.sets?.filter(x=>x.load!==null).at(-1)?.load;let baseLoad=typeof base==='number'?base:'' ;let suggested=priorLoad??baseLoad;let prevText=prior?`<div class="small">Anterior: meta ${prior.target??'—'} kg · ${prior.sets.map(x=>`${x.load??'—'} kg × ${x.reps??'—'} · RIR ${x.rir??'—'}`).join(' / ')}</div>`:'';
+return `<div class="exercise"><b>${esc(name)}</b><div class="small">${sets} series · ${min}–${max} reps · RIR ${info.rir} · Referencia PDF: ${esc(base)} kg</div><label class="small" style="display:block;margin:8px 0 4px">PESO META DE ESTA SESIÓN (kg)</label><input type="number" step=".25" min="0" placeholder="Define tu meta" value="${suggested}" data-k="target" style="width:100%;padding:9px;border:1px solid #cbd5e1;border-radius:8px;margin-bottom:8px"><div class="sethead"><span>#</span><span>Kg</span><span>Reps</span><span>RIR</span></div>${Array.from({length:sets},(_,j)=>`<div class="setrow"><span class="small">${j+1}</span><input type="number" step=".25" placeholder="${String(base).replace('*','')}" data-k="load"><input type="number" min="1" max="50" placeholder="${min}–${max}" data-k="reps"><input type="number" min="0" max="10" placeholder="RIR" data-k="rir"></div>`).join('')}${prevText}<div class="small">Rango operativo inicial sugerido; puedes ajustarlo. El PDF adaptado no detalla rangos individuales en sus tablas.</div></div>`}).join('');
+}
+$('workDay').onchange=exercises;$('week').onchange=exercises;exercises();
+$('saveWorkout').onclick=()=>{let ex=Array.from($('exerciseList').querySelectorAll('.exercise')).map((c,i)=>({name:plans[$('workDay').value][i][0],target:n(c.querySelector('[data-k=target]').value),sets:Array.from(c.querySelectorAll('.setrow')).map(r=>({load:n(r.querySelector('[data-k=load]').value),reps:n(r.querySelector('[data-k=reps]').value),rir:n(r.querySelector('[data-k=rir]').value)})).filter(s=>s.load!==null||s.reps!==null||s.rir!==null)})).filter(x=>x.sets.length);if(!ex.length){$('notice').textContent='Registra al menos una serie.';return}let wk=weekNumber(),wi=weekInfo(wk);let recommendations=ex.map(e=>{let def=plans[$('workDay').value].find(d=>d[0]===e.name);if(wi.deload)return {exercise:e.name,action:'Descarga: no progresar'};let [_,__,min,max]=def;let complete=e.sets.length>0&&e.sets.every(x=>x.reps!==null&&x.reps>=max&&x.rir!==null&&x.rir>=1);let below=e.sets.some(x=>x.reps!==null&&x.reps<min);return {exercise:e.name,action:complete?'Subir carga 2–2.5% en la próxima exposición':below?'Mantener o reducir 2.5–5% y revisar técnica/RIR':'Mantener carga e intentar sumar repeticiones'};});db.workouts.push({date:$('workDate').value,day:$('workDay').value,week:wk,phase:wi.phase,notes:$('workNotes').value,exercises:ex,recommendations});save();$('workNotes').value='';exercises();render();};
+$('saveBody').onclick=()=>{let x={date:$('bodyDate').value,weight:n($('mWeight').value),waist:n($('mWaist').value),chest:n($('mChest').value),arm:n($('mArm').value),hip:n($('mHip').value),fat:n($('mFat').value),notes:$('mNotes').value};if(Object.values(x).every(v=>v===null||v===''))return;db.body.push(x);db.body.sort((a,b)=>a.date.localeCompare(b.date));save();['mWeight','mWaist','mChest','mArm','mHip','mFat','mNotes'].forEach(id=>$(id).value='');render()};
+function targets(){let cut=$('phase').value==='cut';$('calTarget').textContent=cut?'2000':'2300'}
+$('phase').value=db.phase||'bulk';targets();$('phase').onchange=()=>{db.phase=$('phase').value;save();targets()};
+$('saveFood').onclick=()=>{let x={date:$('foodDate').value,cal:n($('fCal').value),protein:n($('fPro').value),carbs:n($('fCarb').value),fat:n($('fFat').value)};if(Object.values(x).slice(1).every(v=>v===null))return;db.food.push(x);save();['fCal','fPro','fCarb','fFat'].forEach(id=>$(id).value='');render()};
+function render(){
+let b=db.body.filter(x=>x.weight!==null).sort((a,b)=>a.date.localeCompare(b.date)),last=b.at(-1)||{weight:65.5,waist:80},now=new Date(),recent=b.filter(x=>(now-new Date(x.date+'T12:00:00'))/86400000<=7),avg=recent.length?recent.reduce((s,x)=>s+x.weight,0)/recent.length:last.weight;
+$('topWeight').textContent=Number(last.weight).toFixed(1);$('topWaist').textContent=last.waist??'—';$('avgWeight').textContent=avg.toFixed(2)+' kg';$('avgWaist').textContent=(last.waist??'—')+' cm';$('weightDelta').textContent=recent.length+' registros en 7 días';$('sessions').textContent=db.workouts.length;
+let fs=db.food.slice(-7);$('avgProtein').textContent=fs.length?Math.round(fs.reduce((s,x)=>s+(x.protein||0),0)/fs.length)+' g':'—';
+let wp=Math.max(0,Math.min(100,(65.5-last.weight)/2*100)),cp=Math.max(0,Math.min(100,(80-(last.waist??80))/3*100));
+$('weightProgress').textContent=last.weight+' / 63.5 kg';$('waistProgress').textContent=(last.waist??'—')+' / 77 cm';$('weightBar').style.width=wp+'%';$('waistBar').style.width=cp+'%';
+let vals=b.slice(-14),min=vals.length?Math.min(...vals.map(x=>x.weight))-.3:65,max=vals.length?Math.max(...vals.map(x=>x.weight))+.3:66;
+$('weightChart').innerHTML=vals.length?vals.map(x=>`<div title="${esc(x.date)} · ${x.weight}kg" style="flex:1;height:${Math.max(8,(x.weight-min)/(max-min)*100)}%;background:#2457a7;border-radius:4px 4px 0 0"></div>`).join(''):'<span class="small">Sin registros</span>';
+$('bodyHistory').innerHTML=db.body.slice().reverse().slice(0,12).map(x=>`<div class="log"><b>${esc(x.date)}</b><br><span class="small">${x.weight??'—'} kg · cintura ${x.waist??'—'} · pecho ${x.chest??'—'} · brazo ${x.arm??'—'} ${x.fat!=null?'· grasa '+x.fat+'%':''}</span></div>`).join('')||'Todavía no hay mediciones.';
+$('workHistory').innerHTML=db.workouts.slice().reverse().slice(0,15).map(w=>`<div class="log"><b>${esc(w.date)} · ${esc(w.day)}</b><div class="small">Semana ${esc(w.week)} · ${w.exercises.length} ejercicios · ${w.exercises.reduce((s,e)=>s+e.sets.length,0)} series</div>${w.exercises.map(e=>`<div class="small">${esc(e.name)} · Meta: ${e.target??'—'} kg · Real: ${e.sets.map(s=>`${s.load??'—'}kg × ${s.reps??'—'} (RIR ${s.rir??'—'})`).join(' / ')}</div>`).join('')}${(w.recommendations||[]).map(r=>`<div class="small"><b>${esc(r.exercise)}:</b> ${esc(r.action)}</div>`).join('')}</div>`).join('')||'Sin sesiones.';
+$('foodHistory').innerHTML=db.food.slice().reverse().slice(0,15).map(x=>`<div class="log"><b>${esc(x.date)}</b><div class="small">${x.cal??'—'} kcal · ${x.protein??'—'}g proteína · ${x.carbs??'—'}g carbohidratos · ${x.fat??'—'}g grasas</div></div>`).join('')||'Sin registros.';
+let f=db.food.filter(x=>x.date===$('foodDate').value).at(-1),target=$('phase').value==='cut'?2000:2300;$('foodBalance').innerHTML=f?`${f.cal??'—'} / ${target} kcal · Proteína ${f.protein??'—'} / 140 g · Carbohidratos ${f.carbs??'—'} g · Grasas ${f.fat??'—'} g`:'No hay registro para esta fecha.';
+}
+function download(name,content,type){let a=document.createElement('a'),u=URL.createObjectURL(new Blob([content],{type}));a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)}
+$('backupData').onclick=()=>download('bruno-fitness-backup.json',JSON.stringify(db,null,2),'application/json');
+$('restoreFile').onchange=async e=>{try{let x=JSON.parse(await e.target.files[0].text());if(!x.body||!x.workouts||!x.food)throw Error();db=x;save();render();alert('Copia restaurada')}catch(err){alert('Archivo de copia no válido')}};
+$('exportData').onclick=()=>{let rows=[['tipo','fecha','sesion','semana','ejercicio','serie','kg','reps','rir','peso','cintura','pecho','brazo','cadera','grasa','calorias','proteina','carbohidratos','grasas','notas']];db.body.forEach(x=>rows.push(['medida',x.date,'','','','','','','',x.weight,x.waist,x.chest,x.arm,x.hip,x.fat,'','','','',x.notes]));db.workouts.forEach(w=>w.exercises.forEach(e=>e.sets.forEach((s,i)=>rows.push(['entrenamiento',w.date,w.day,w.week,e.name,i+1,s.load,s.reps,s.rir]))));db.food.forEach(x=>rows.push(['nutricion',x.date,'','','','','','','','','','','','','',x.cal,x.protein,x.carbs,x.fat]));download('bruno-fitness-registros.csv','\ufeff'+rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\n'),'text/csv;charset=utf-8')};
+$('clearData').onclick=()=>{if(confirm('¿Borrar definitivamente todos los registros?')){db={body:[],workouts:[],food:[],phase:'bulk'};save();render()}};
+render();
+})();
+</script></body></html>

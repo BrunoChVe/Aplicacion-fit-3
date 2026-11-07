@@ -1,0 +1,10 @@
+BRUNO FITNESS TRACKER PWA — ACTUALIZACIÓN PESO META
+
+Sube estos archivos a tu repositorio GitHub, reemplazando index.html y sw.js, y conservando manifest.webmanifest e icons/.
+GitHub Pages: Settings > Pages > Deploy from a branch > main > /(root).
+
+Novedad:
+- Campo de peso meta (kg) por ejercicio y sesión.
+- Se conserva la meta junto con el peso real, repeticiones y RIR.
+- La sesión siguiente muestra la carga anterior y su meta como referencia.
+- Se mantienen los registros existentes del navegador (misma clave localStorage).
