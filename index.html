@@ -29,7 +29,7 @@ input,select{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:8px;
 </style>
 </head>
 <body><main class="wrap" id="app">
-<header><div class="muted">PERSONAL TRAINING SYSTEM</div><h1>Bruno Fitness Tracker</h1><div class="muted">Proyecto físico · Abril 2027 · Hipertrofia 3.0 · v2.0</div></header>
+<header><div class="muted">PERSONAL TRAINING SYSTEM</div><h1>Bruno Fitness Tracker</h1><div class="muted">Proyecto físico · Abril 2027 · Hipertrofia 3.0</div></header>
 <div class="stats">
  <div class="card"><div class="label">Peso actual</div><div class="metric" id="topWeight">65.5</div><div class="label">kg</div></div>
  <div class="card"><div class="label">Cintura</div><div class="metric" id="topWaist">80</div><div class="label">cm</div></div>
@@ -56,9 +56,9 @@ input,select{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:8px;
 <div class="card">
 <div class="field"><label>Fecha</label><input type="date" id="workDate"></div>
 <div class="field"><label>Sesión</label><select id="workDay"><option value="lowerA">Martes · Lower A</option><option value="upperA">Jueves · Upper A</option><option value="lowerB">Viernes · Lower B</option><option value="upperB">Sábado · Upper B</option></select></div>
-<div class="field"><label>Semana del bloque</label><select id="week"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4 · Descarga</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8 · Descarga</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12 · Transición</option></select></div>
+<div class="field"><label>Semana del bloque</label><select id="week"><option>1</option><option>2</option><option>3</option><option>4 · Descarga</option><option>5</option><option>6</option><option>7</option><option>8 · Descarga</option><option>9</option><option>10</option><option>11</option><option>12 · Transición</option></select></div>
 </div>
-<div class="card" id="weekPrescription" aria-live="polite"></div><div id="exerciseList"></div>
+<div id="exerciseList"></div>
 <div class="card"><div class="field"><label>Observaciones</label><input id="workNotes" placeholder="Energía, técnica, molestias..."></div><button type="button" class="primary full" id="saveWorkout">Guardar sesión</button></div>
 <p class="small">Registra carga, repeticiones y RIR por serie efectiva. RIR = repeticiones que estimas que aún podrías realizar con buena técnica.</p>
 </section>
@@ -115,24 +115,21 @@ let db;try{db=JSON.parse(localStorage.getItem('bft-bruno-v1'))||initial}catch(e)
 const save=()=>{try{localStorage.setItem('bft-bruno-v1',JSON.stringify(db));$('notice').textContent='Guardado · '+new Date().toLocaleTimeString()}catch(e){$('notice').textContent='No se pudo guardar. Descarga una copia.'}};
 const n=v=>v===''||v==null?null:Number(v),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const plans={
-lowerA:[['Sentadilla máquina Smith',2,6,10,50],['Curl femoral sentado',2,8,12,43],['Curl martillo con apoyo',3,8,12,12],['Extensión de tríceps en polea',3,10,15,21],['Extensión de cuádriceps',1,10,15,79.5],['Curl femoral tumbado',1,10,15,50]],
-upperA:[['Press banca inclinado con barra',3,6,10,45],['Dominadas neutras',3,6,10,'76*'],['Press horizontal en máquina',2,8,12,59],['Remo prono en máquina',1,8,12,57],['Elevación lateral en polea',3,12,20,3.75]],
-lowerB:[['Peso muerto rumano (RDL)',2,6,10,95],['Sentadilla hack',2,8,12,60],['Extensión de tríceps overhead',3,10,15,18.75],['Curl predicador barra Z',3,8,12,'30 / 26'],['Curl femoral tumbado',1,10,15,50],['Búlgara Smith dominante cadera',1,8,12,30],['Crunch abdominal máquina',2,10,15,72.5]],
-upperB:[['Remo Helms con barra',2,6,10,60],['Press banca plano con barra',3,6,10,65],['Jalón prono en polea',3,8,12,57],['Press inclinado máquina pendular',2,8,12,60],['Elevación lateral con mancuerna',3,12,20,12]]
+lowerA:[['Sentadilla máquina Smith',2],['Curl femoral sentado',2],['Curl martillo con apoyo',3],['Extensión de tríceps en polea',3],['Extensión de cuádriceps',1],['Curl femoral tumbado',1]],
+upperA:[['Press banca inclinado con barra',3],['Dominadas neutras',3],['Press horizontal en máquina',2],['Remo prono en máquina',1],['Elevación lateral en polea',3]],
+lowerB:[['Peso muerto rumano (RDL)',2],['Sentadilla hack',2],['Extensión de tríceps overhead',3],['Curl predicador barra Z',3],['Curl femoral tumbado',1],['Búlgara Smith dominante cadera',1],['Crunch abdominal máquina',2]],
+upperB:[['Remo Helms con barra',2],['Press banca plano con barra',3],['Jalón prono en polea',3],['Press inclinado máquina pendular',2],['Elevación lateral con mancuerna',3]]
 };
-const weekInfo=w=>w<=3?{phase:'Acumulación 1',rir:w===1?'3–4 básicos / 2–3 aislamientos':w===2?'3 básicos / 2 aislamientos':'2 básicos / 1–2 aislamientos',deload:false}:w===4?{phase:'Descarga',rir:'4+ en todas las series',deload:true}:w<=7?{phase:'Acumulación 2',rir:w===5?'2–3':w===6?'2':'1–2',deload:false}:w===8?{phase:'Descarga',rir:'3–4 en todas las series',deload:true}:w<=11?{phase:'Intensificación',rir:w===9?'2':'1–2 básicos / 0–1 aislamientos',deload:false}:{phase:'Transición',rir:'3–4 en todas las series',deload:true};
-function weekNumber(){return Math.max(1,Math.min(12,parseInt($('week').value,10)||1))}
-function targetRir(w){return weekInfo(w).rir}
+function tab(t){document.querySelectorAll('main section').forEach(x=>x.classList.toggle('hidden',x.id!==t));document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active',x.dataset.tab===t));render()}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>tab(b.dataset.tab));
+$('quickWorkout').onclick=()=>tab('train');
+['workDate','bodyDate','foodDate'].forEach(x=>$(x).value=today());
 function exercises(){
-let day=$('workDay').value,w=weekNumber(),info=weekInfo(w),prev=db.workouts.filter(x=>x.day===day).at(-1);
-let defs=plans[day];
-let title=`<b>Semana ${w} · ${info.phase}</b><div class="small">RIR objetivo: ${info.rir}. ${info.deload?'Descarga/transición: reduce aproximadamente 50% de series y no busques progresar.':'Progresión: primero repeticiones; después carga.'}</div>`;
-$('weekPrescription').innerHTML=title;
-$('exerciseList').innerHTML=defs.map(([name,count,min,max,base],i)=>{let sets=info.deload?Math.max(1,Math.ceil(count/2)):count;let prior=prev?.exercises?.find(e=>e.name===name);let priorLoad=prior?.sets?.filter(x=>x.load!==null).at(-1)?.load;let baseLoad=typeof base==='number'?base:'' ;let suggested=priorLoad??baseLoad;let prevText=prior?`<div class="small">Anterior: meta ${prior.target??'—'} kg · ${prior.sets.map(x=>`${x.load??'—'} kg × ${x.reps??'—'} · RIR ${x.rir??'—'}`).join(' / ')}</div>`:'';
-return `<div class="exercise"><b>${esc(name)}</b><div class="small">${sets} series · ${min}–${max} reps · RIR ${info.rir} · Referencia PDF: ${esc(base)} kg</div><label class="small" style="display:block;margin:8px 0 4px">PESO META DE ESTA SESIÓN (kg)</label><input type="number" step=".25" min="0" placeholder="Define tu meta" value="${suggested}" data-k="target" style="width:100%;padding:9px;border:1px solid #cbd5e1;border-radius:8px;margin-bottom:8px"><div class="sethead"><span>#</span><span>Kg</span><span>Reps</span><span>RIR</span></div>${Array.from({length:sets},(_,j)=>`<div class="setrow"><span class="small">${j+1}</span><input type="number" step=".25" placeholder="${String(base).replace('*','')}" data-k="load"><input type="number" min="1" max="50" placeholder="${min}–${max}" data-k="reps"><input type="number" min="0" max="10" placeholder="RIR" data-k="rir"></div>`).join('')}${prevText}<div class="small">Rango operativo inicial sugerido; puedes ajustarlo. El PDF adaptado no detalla rangos individuales en sus tablas.</div></div>`}).join('');
+let day=$('workDay').value,prev=db.workouts.filter(w=>w.day===day).at(-1);
+$('exerciseList').innerHTML=plans[day].map(([name,count],i)=>`<div class="exercise"><b>${esc(name)}</b><label class="small" style="display:block;margin:8px 0 4px">PESO META DE ESTA SESIÓN (kg)</label><input type="number" step=".25" min="0" placeholder="Meta en kg" data-k="target" style="width:100%;padding:9px;border:1px solid #cbd5e1;border-radius:8px;margin-bottom:8px"><div class="sethead"><span>#</span><span>Kg real</span><span>Reps</span><span>RIR</span></div>${Array.from({length:count},(_,j)=>`<div class="setrow"><span class="small">${j+1}</span><input type="number" step=".25" placeholder="kg" data-k="load"><input type="number" placeholder="reps" data-k="reps"><input type="number" min="0" max="10" placeholder="RIR" data-k="rir"></div>`).join('')}${prev?.exercises[i]?`<div class="small">Anterior: ${prev.exercises[i].sets.map(s=>`${s.load??'—'}kg × ${s.reps??'—'} · RIR ${s.rir??'—'}`).join(' / ')}</div>`:''}</div>`).join('');
 }
-$('workDay').onchange=exercises;$('week').onchange=exercises;exercises();
-$('saveWorkout').onclick=()=>{let ex=Array.from($('exerciseList').querySelectorAll('.exercise')).map((c,i)=>({name:plans[$('workDay').value][i][0],target:n(c.querySelector('[data-k=target]').value),sets:Array.from(c.querySelectorAll('.setrow')).map(r=>({load:n(r.querySelector('[data-k=load]').value),reps:n(r.querySelector('[data-k=reps]').value),rir:n(r.querySelector('[data-k=rir]').value)})).filter(s=>s.load!==null||s.reps!==null||s.rir!==null)})).filter(x=>x.sets.length);if(!ex.length){$('notice').textContent='Registra al menos una serie.';return}let wk=weekNumber(),wi=weekInfo(wk);let recommendations=ex.map(e=>{let def=plans[$('workDay').value].find(d=>d[0]===e.name);if(wi.deload)return {exercise:e.name,action:'Descarga: no progresar'};let [_,__,min,max]=def;let complete=e.sets.length>0&&e.sets.every(x=>x.reps!==null&&x.reps>=max&&x.rir!==null&&x.rir>=1);let below=e.sets.some(x=>x.reps!==null&&x.reps<min);return {exercise:e.name,action:complete?'Subir carga 2–2.5% en la próxima exposición':below?'Mantener o reducir 2.5–5% y revisar técnica/RIR':'Mantener carga e intentar sumar repeticiones'};});db.workouts.push({date:$('workDate').value,day:$('workDay').value,week:wk,phase:wi.phase,notes:$('workNotes').value,exercises:ex,recommendations});save();$('workNotes').value='';exercises();render();};
+$('workDay').onchange=exercises;exercises();
+$('saveWorkout').onclick=()=>{let ex=Array.from($('exerciseList').querySelectorAll('.exercise')).map((c,i)=>({name:plans[$('workDay').value][i][0],target:n(c.querySelector('[data-k=target]').value),sets:Array.from(c.querySelectorAll('.setrow')).map(r=>({load:n(r.querySelector('[data-k=load]').value),reps:n(r.querySelector('[data-k=reps]').value),rir:n(r.querySelector('[data-k=rir]').value)})).filter(s=>s.load!==null||s.reps!==null||s.rir!==null)})).filter(x=>x.sets.length);if(!ex.length){$('notice').textContent='Registra al menos una serie.';return}db.workouts.push({date:$('workDate').value,day:$('workDay').value,week:$('week').value,notes:$('workNotes').value,exercises:ex});save();$('workNotes').value='';exercises();render();};
 $('saveBody').onclick=()=>{let x={date:$('bodyDate').value,weight:n($('mWeight').value),waist:n($('mWaist').value),chest:n($('mChest').value),arm:n($('mArm').value),hip:n($('mHip').value),fat:n($('mFat').value),notes:$('mNotes').value};if(Object.values(x).every(v=>v===null||v===''))return;db.body.push(x);db.body.sort((a,b)=>a.date.localeCompare(b.date));save();['mWeight','mWaist','mChest','mArm','mHip','mFat','mNotes'].forEach(id=>$(id).value='');render()};
 function targets(){let cut=$('phase').value==='cut';$('calTarget').textContent=cut?'2000':'2300'}
 $('phase').value=db.phase||'bulk';targets();$('phase').onchange=()=>{db.phase=$('phase').value;save();targets()};
@@ -146,7 +143,7 @@ $('weightProgress').textContent=last.weight+' / 63.5 kg';$('waistProgress').text
 let vals=b.slice(-14),min=vals.length?Math.min(...vals.map(x=>x.weight))-.3:65,max=vals.length?Math.max(...vals.map(x=>x.weight))+.3:66;
 $('weightChart').innerHTML=vals.length?vals.map(x=>`<div title="${esc(x.date)} · ${x.weight}kg" style="flex:1;height:${Math.max(8,(x.weight-min)/(max-min)*100)}%;background:#2457a7;border-radius:4px 4px 0 0"></div>`).join(''):'<span class="small">Sin registros</span>';
 $('bodyHistory').innerHTML=db.body.slice().reverse().slice(0,12).map(x=>`<div class="log"><b>${esc(x.date)}</b><br><span class="small">${x.weight??'—'} kg · cintura ${x.waist??'—'} · pecho ${x.chest??'—'} · brazo ${x.arm??'—'} ${x.fat!=null?'· grasa '+x.fat+'%':''}</span></div>`).join('')||'Todavía no hay mediciones.';
-$('workHistory').innerHTML=db.workouts.slice().reverse().slice(0,15).map(w=>`<div class="log"><b>${esc(w.date)} · ${esc(w.day)}</b><div class="small">Semana ${esc(w.week)} · ${w.exercises.length} ejercicios · ${w.exercises.reduce((s,e)=>s+e.sets.length,0)} series</div>${w.exercises.map(e=>`<div class="small">${esc(e.name)} · Meta: ${e.target??'—'} kg · Real: ${e.sets.map(s=>`${s.load??'—'}kg × ${s.reps??'—'} (RIR ${s.rir??'—'})`).join(' / ')}</div>`).join('')}${(w.recommendations||[]).map(r=>`<div class="small"><b>${esc(r.exercise)}:</b> ${esc(r.action)}</div>`).join('')}</div>`).join('')||'Sin sesiones.';
+$('workHistory').innerHTML=db.workouts.slice().reverse().slice(0,15).map(w=>`<div class="log"><b>${esc(w.date)} · ${esc(w.day)}</b><div class="small">Semana ${esc(w.week)} · ${w.exercises.length} ejercicios · ${w.exercises.reduce((s,e)=>s+e.sets.length,0)} series</div>${w.exercises.map(e=>`<div class="small">${esc(e.name)} · Meta: ${e.target??'—'} kg · Real: ${e.sets.map(s=>`${s.load??'—'}kg × ${s.reps??'—'} (RIR ${s.rir??'—'})`).join(' / ')}</div>`).join('')}</div>`).join('')||'Sin sesiones.';
 $('foodHistory').innerHTML=db.food.slice().reverse().slice(0,15).map(x=>`<div class="log"><b>${esc(x.date)}</b><div class="small">${x.cal??'—'} kcal · ${x.protein??'—'}g proteína · ${x.carbs??'—'}g carbohidratos · ${x.fat??'—'}g grasas</div></div>`).join('')||'Sin registros.';
 let f=db.food.filter(x=>x.date===$('foodDate').value).at(-1),target=$('phase').value==='cut'?2000:2300;$('foodBalance').innerHTML=f?`${f.cal??'—'} / ${target} kcal · Proteína ${f.protein??'—'} / 140 g · Carbohidratos ${f.carbs??'—'} g · Grasas ${f.fat??'—'} g`:'No hay registro para esta fecha.';
 }
@@ -157,15 +154,6 @@ $('exportData').onclick=()=>{let rows=[['tipo','fecha','sesion','semana','ejerci
 $('clearData').onclick=()=>{if(confirm('¿Borrar definitivamente todos los registros?')){db={body:[],workouts:[],food:[],phase:'bulk'};save();render()}};
 render();
 })();
-</script>
-<script>
-window.addEventListener('error', function(e) {
-  var n = document.getElementById('notice');
-  if (n) n.textContent = 'Error de la aplicación: ' + (e.message || 'JavaScript') + '. Recarga la página; si persiste, envía una captura.';
-});
-window.addEventListener('unhandledrejection', function(e) {
-  var n = document.getElementById('notice');
-  if (n) n.textContent = 'Error interno: ' + String(e.reason || 'operación fallida');
-});
-</script>
-</body></html>
+</script><script>
+window.addEventListener('error',e=>{const n=document.getElementById('notice');if(n)n.textContent='Error: '+(e.message||'fallo de JavaScript')});
+</script></body></html>

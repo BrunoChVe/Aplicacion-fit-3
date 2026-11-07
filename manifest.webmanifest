@@ -2,7 +2,7 @@
   "id": "./",
   "name": "Bruno Fitness Tracker",
   "short_name": "Bruno Fitness",
-  "description": "Seguimiento personal de entrenamiento, composición corporal y nutrición.",
+  "description": "Seguimiento de entrenamiento, composición corporal y nutrición.",
   "lang": "es-PE",
   "start_url": "./",
   "scope": "./",

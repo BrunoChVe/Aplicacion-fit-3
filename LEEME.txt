@@ -1,7 +1,7 @@
-BRUNO FITNESS TRACKER — HOTFIX DE BOTONES Y CACHÉ
+RECUPERACIÓN BRUNO FITNESS TRACKER
 
-Sube TODO el contenido de esta carpeta a la raíz del repositorio GitHub, reemplazando archivos existentes.
-Archivos clave: index.html y sw.js.
-Después de Commit changes, espera a que GitHub Pages termine el despliegue.
-Abre la web en Chrome/Safari y recarga. La caché pasa a v3 y solicita el HTML actualizado.
-La clave de almacenamiento local se mantiene como bft-bruno-v1 para conservar los registros de ese navegador.
+Esta versión restaura el código de la primera versión funcional y añade únicamente el campo Peso meta por ejercicio/sesión.
+Conserva la clave localStorage bft-bruno-v1 para no cambiar el espacio local de datos.
+
+En GitHub: Add file > Upload files. Sube index.html, sw.js, manifest.webmanifest y la carpeta icons a la raíz del repositorio, reemplazando los existentes. Commit changes.
+Luego espera el despliegue y abre la web en Chrome. Si usas la PWA instalada, ciérrala completamente y vuelve a abrirla tras la actualización.
